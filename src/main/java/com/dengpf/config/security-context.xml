@@ -6,15 +6,21 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
+
 	<security:authentication-manager>
 		<security:authentication-provider>
-			<security:jdbc-user-service data-source-ref="dataSource"
-				authorities-by-username-query='select * from authorities where binary username = ?'
-				users-by-username-query='select * from users where binary username = ?'
-				id="jdbcUserService" />
-			<security:password-encoder ref="passwordEncoder"></security:password-encoder>
+			<security:user-service>
+				<security:user name="John" authorities="admin"
+					password="letmein" />
+				<security:user name="Zog" authorities="admin"
+					password="iamzog" />
+			</security:user-service>
+		</security:authentication-provider>
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" />
 		</security:authentication-provider>
 	</security:authentication-manager>
+
 
 	<security:http use-expressions="true">
 		<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')" />
@@ -34,8 +40,8 @@
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=true" />
 		<security:logout logout-success-url="/loggedout" />
 		<security:access-denied-handler error-page="/denied" />
-		<security:remember-me key="offersAppKey"
-			user-service-ref="jdbcUserService" />
+		<!-- <security:remember-me key="offersAppKey"
+			user-service-ref="jdbcUserService" /> -->
 	</security:http>
 	
 	<security:global-method-security secured-annotations="enabled"></security:global-method-security>
